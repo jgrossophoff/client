@@ -102,6 +102,11 @@ const loadMoreMessagesTransformer = ({
   type,
 })
 
+const loadingMessagesTransformer = ({type, payload: {isRequesting}}: Constants.LoadingMessages) => ({
+  payload: {isRequesting},
+  type,
+})
+
 function exitSearch(skipSelectPreviousConversation: boolean): Constants.ExitSearch {
   return {
     payload: {skipSelectPreviousConversation},
@@ -408,6 +413,7 @@ function loadingMessages(
   isRequesting: boolean
 ): Constants.LoadingMessages {
   return {
+    logTransformer: loadingMessagesTransformer,
     payload: {conversationIDKey, isRequesting},
     type: 'chat:loadingMessages',
   }
