@@ -379,55 +379,56 @@ const getThreadNonblockSagaMap = (yourName, yourDeviceName, conversationIDKey, a
 function* _loadMoreMessages(action: Constants.LoadMoreMessages): SagaGenerator<any, any> {
   const conversationIDKey = action.payload.conversationIDKey
 
+  if (!conversationIDKey) {
+    console.log('Bailing on empty conversation ID key')
+    return
+  }
+
+  if (Constants.isPendingConversationIDKey(conversationIDKey)) {
+    console.log('Bailing on selected pending conversation no matching inbox')
+    return
+  }
+
+  const untrustedState = yield select(state => state.entities.inboxUntrustedState.get(conversationIDKey))
+
+  // only load unboxed things
+  if (!['unboxed', 'reUnboxing'].includes(untrustedState)) {
+    console.log('Bailing on not yet unboxed conversation', untrustedState)
+    return
+  }
+
+  const rekeyInfoSelector = (state: TypedState, conversationIDKey: Constants.ConversationIDKey) => {
+    return state.chat.get('rekeyInfos').get(conversationIDKey)
+  }
+  const rekeyInfo = yield select(rekeyInfoSelector, conversationIDKey)
+
+  if (rekeyInfo) {
+    console.log('Bailing on chat due to rekey info')
+    return
+  }
+
+  const oldConversationState = yield select(Shared.conversationStateSelector, conversationIDKey)
+  if (oldConversationState && !action.payload.onlyNewerThan) {
+    if (action.payload.onlyIfUnloaded && oldConversationState.get('isLoaded')) {
+      console.log('Bailing on chat load more due to already has initial load')
+      return
+    }
+
+    if (oldConversationState.get('isRequesting')) {
+      console.log('Bailing on chat load more due to isRequesting already')
+      return
+    }
+
+    if (oldConversationState.get('moreToLoad') === false) {
+      console.log('Bailing on chat load more due to no more to load')
+      return
+    }
+  }
+  const next = yield select(Constants.getPaginationNext, conversationIDKey)
+
+  yield put(Creators.loadingMessages(conversationIDKey, true))
+
   try {
-    if (!conversationIDKey) {
-      return
-    }
-
-    if (Constants.isPendingConversationIDKey(conversationIDKey)) {
-      console.log('Bailing on selected pending conversation no matching inbox')
-      return
-    }
-
-    const untrustedState = yield select(state => state.entities.inboxUntrustedState.get(conversationIDKey))
-
-    // only load unboxed things
-    if (!['unboxed', 'reUnboxing'].includes(untrustedState)) {
-      console.log('Bailing on not yet unboxed conversation', untrustedState)
-      return
-    }
-
-    const rekeyInfoSelector = (state: TypedState, conversationIDKey: Constants.ConversationIDKey) => {
-      return state.chat.get('rekeyInfos').get(conversationIDKey)
-    }
-    const rekeyInfo = yield select(rekeyInfoSelector, conversationIDKey)
-
-    if (rekeyInfo) {
-      console.log('Bailing on chat due to rekey info')
-      return
-    }
-
-    const oldConversationState = yield select(Shared.conversationStateSelector, conversationIDKey)
-    if (oldConversationState && !action.payload.onlyNewerThan) {
-      if (action.payload.onlyIfUnloaded && oldConversationState.get('isLoaded')) {
-        console.log('Bailing on chat load more due to already has initial load')
-        return
-      }
-
-      if (oldConversationState.get('isRequesting')) {
-        console.log('Bailing on chat load more due to isRequesting already')
-        return
-      }
-
-      if (oldConversationState.get('moreToLoad') === false) {
-        console.log('Bailing on chat load more due to no more to load')
-        return
-      }
-    }
-    const next = yield select(Constants.getPaginationNext, conversationIDKey)
-
-    yield put(Creators.loadingMessages(conversationIDKey, true))
-
     const yourName = yield select(usernameSelector)
     const yourDeviceName = yield select(Shared.devicenameSelector)
 
