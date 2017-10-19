@@ -503,7 +503,7 @@ export type LeaveConversation = NoErrorTypedAction<
 export type LoadInbox = NoErrorTypedAction<'chat:loadInbox', void>
 export type LoadMoreMessages = NoErrorTypedAction<
   'chat:loadMoreMessages',
-  {conversationIDKey: ConversationIDKey, onlyIfUnloaded: boolean}
+  {conversationIDKey: ConversationIDKey, onlyIfUnloaded: boolean, fromUser: boolean, onlyNewerThan: ?string}
 >
 export type LoadingMessages = NoErrorTypedAction<
   'chat:loadingMessages',
