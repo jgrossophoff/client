@@ -600,6 +600,7 @@ export const TeamsTeamApplication = {
   chat: 2,
   saltpack: 3,
   gitMetadata: 4,
+  seitanInviteToken: 5,
 }
 
 export const TeamsTeamInviteCategory = {
@@ -2444,6 +2445,14 @@ export function teamsTeamCreateRpcChannelMap (configKeys: Array<string>, request
 
 export function teamsTeamCreateRpcPromise (request: (requestCommon & {callback?: ?(err: ?any, response: teamsTeamCreateResult) => void} & {param: teamsTeamCreateRpcParam})): Promise<teamsTeamCreateResult> {
   return new Promise((resolve, reject) => engineRpcOutgoing('keybase.1.teams.teamCreate', request, (error, result) => error ? reject(error) : resolve(result)))
+}
+
+export function teamsTeamCreateSeitanTokenRpcChannelMap (configKeys: Array<string>, request: requestCommon & {callback?: ?(err: ?any, response: teamsTeamCreateSeitanTokenResult) => void} & {param: teamsTeamCreateSeitanTokenRpcParam}): EngineChannel {
+  return engine()._channelMapRpcHelper(configKeys, 'keybase.1.teams.teamCreateSeitanToken', request)
+}
+
+export function teamsTeamCreateSeitanTokenRpcPromise (request: (requestCommon & {callback?: ?(err: ?any, response: teamsTeamCreateSeitanTokenResult) => void} & {param: teamsTeamCreateSeitanTokenRpcParam})): Promise<teamsTeamCreateSeitanTokenResult> {
+  return new Promise((resolve, reject) => engineRpcOutgoing('keybase.1.teams.teamCreateSeitanToken', request, (error, result) => error ? reject(error) : resolve(result)))
 }
 
 export function teamsTeamCreateWithSettingsRpcChannelMap (configKeys: Array<string>, request: requestCommon & {callback?: ?(err: ?any, response: teamsTeamCreateWithSettingsResult) => void} & {param: teamsTeamCreateWithSettingsRpcParam}): EngineChannel {
@@ -4823,6 +4832,7 @@ export type TeamApplication =
   | 2 // CHAT_2
   | 3 // SALTPACK_3
   | 4 // GIT_METADATA_4
+  | 5 // SEITAN_INVITE_TOKEN_5
 
 export type TeamApplicationKey = {
   application: TeamApplication,
@@ -6286,6 +6296,11 @@ export type teamsTeamCreateRpcParam = Exact<{
   sendChatNotification: boolean
 }>
 
+export type teamsTeamCreateSeitanTokenRpcParam = Exact<{
+  name: string,
+  role: TeamRole
+}>
+
 export type teamsTeamCreateWithSettingsRpcParam = Exact<{
   name: string,
   sendChatNotification: boolean,
@@ -6622,6 +6637,7 @@ type teamsLookupOrCreateImplicitTeamResult = LookupImplicitTeamRes
 type teamsTeamAddEmailsBulkResult = BulkRes
 type teamsTeamAddMemberResult = TeamAddMemberResult
 type teamsTeamCreateResult = TeamCreateResult
+type teamsTeamCreateSeitanTokenResult = string
 type teamsTeamCreateWithSettingsResult = TeamCreateResult
 type teamsTeamGetResult = TeamDetails
 type teamsTeamListRequestsResult = ?Array<TeamJoinRequest>
