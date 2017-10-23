@@ -887,5 +887,10 @@ func CreateSeitanToken(ctx context.Context, g *libkb.GlobalContext, teamname str
 	if err != nil {
 		return "", err
 	}
-	return t.InviteSeitan(ctx, role)
+	ikey, err := t.InviteSeitan(ctx, role)
+	if err != nil {
+		return "", err
+	}
+
+	return string(ikey), err
 }
