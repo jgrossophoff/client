@@ -6285,8 +6285,7 @@ export type teamsTeamAcceptInviteOrRequestAccessRpcParam = Exact<{
 }>
 
 export type teamsTeamAcceptInviteRpcParam = Exact<{
-  token: string,
-  seitan: boolean
+  token: string
 }>
 
 export type teamsTeamAddEmailsBulkRpcParam = Exact<{

@@ -1654,14 +1654,12 @@ func (o TeamRenameArg) DeepCopy() TeamRenameArg {
 type TeamAcceptInviteArg struct {
 	SessionID int    `codec:"sessionID" json:"sessionID"`
 	Token     string `codec:"token" json:"token"`
-	Seitan    bool   `codec:"seitan" json:"seitan"`
 }
 
 func (o TeamAcceptInviteArg) DeepCopy() TeamAcceptInviteArg {
 	return TeamAcceptInviteArg{
 		SessionID: o.SessionID,
 		Token:     o.Token,
-		Seitan:    o.Seitan,
 	}
 }
 
