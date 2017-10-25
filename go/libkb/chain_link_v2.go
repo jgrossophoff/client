@@ -34,7 +34,7 @@ const (
 	// If you add a new one be sure to get all of these too:
 	// - A corresponding libkb.LinkType in constants.go
 	// - SigchainV2TypeFromV1TypeTeams
-	// - SigChainV2Type.IsTeamType
+	// - SigChainV2Type.IsSupportedTeamType
 	// - SigChainV2Type.RequiresAdminPermission
 	// - SigChainV2Type.TeamAllowStub
 	// - TeamSigChainPlayer.addInnerLink (add a case)
@@ -64,7 +64,8 @@ func (t SigchainV2Type) NeedsSignature() bool {
 }
 
 // Whether a type is for team sigchains.
-func (t SigchainV2Type) IsTeamType() bool {
+// Also the list of which types are supported by this client.
+func (t SigchainV2Type) IsSupportedTeamType() bool {
 	switch t {
 	case SigchainV2TypeTeamRoot,
 		SigchainV2TypeTeamNewSubteam,
@@ -87,7 +88,7 @@ func (t SigchainV2Type) IsTeamType() bool {
 }
 
 func (t SigchainV2Type) RequiresAdminPermission() bool {
-	if !t.IsTeamType() {
+	if !t.IsSupportedTeamType() {
 		return false
 	}
 	switch t {
@@ -122,21 +123,29 @@ func (t SigchainV2Type) TeamAllowStub(role keybase1.TeamRole) bool {
 		SigchainV2TypeTeamInvite:
 		return true
 	default:
-		// Disallow stubbing of other including unknown links
-		// TODO CORE-6274 allow stubbing of unknown types
-		return false
+		// Disallow stubbing of other known links.
+		// Allow stubbing of unknown link types for forward compatibility.
+		return !t.IsSupportedTeamType()
 	}
 }
 
 // OuterLinkV2 is the second version of Keybase sigchain signatures.
 type OuterLinkV2 struct {
-	_struct  bool             `codec:",toarray"`
-	Version  int              `codec:"version"`
-	Seqno    keybase1.Seqno   `codec:"seqno"`
-	Prev     LinkID           `codec:"prev"`
-	Curr     LinkID           `codec:"curr"`
-	LinkType SigchainV2Type   `codec:"type"`
-	SeqType  keybase1.SeqType `codec:"seqtype"`
+	_struct  bool           `codec:",toarray"`
+	Version  int            `codec:"version"`
+	Seqno    keybase1.Seqno `codec:"seqno"`
+	Prev     LinkID         `codec:"prev"`
+	Curr     LinkID         `codec:"curr"`
+	LinkType SigchainV2Type `codec:"type"`
+	// -- Links exist in the wild that are missing fields below this line.
+	SeqType keybase1.SeqType `codec:"seqtype"`
+	// -- Links exist in the wild that are missing fields below this line too.
+	// Whether the link can be ignored by clients that do not support its link type.
+	// This does _not_ mean the link can be ignored if the client supports the link type.
+	// When it comes to stubbing, if the link is unsupported and this bit is set then
+	// - it can be stubbed for non-admins
+	// - it cannot be stubbed for admins
+	IgnoreIfUnsupported bool `codec:"ignore_if_unsupported"`
 }
 
 type OuterLinkV2WithMetadata struct {

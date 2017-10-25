@@ -260,3 +260,19 @@ func NewTeamDeletedError() error { return &TeamDeletedError{} }
 func (e TeamDeletedError) Error() string {
 	return "team has been deleted"
 }
+
+type UnsupportedLinkTypeError struct {
+	outerType libkb.SigchainV2Type
+	innerType string
+}
+
+func NewUnsupportedLinkTypeError(outerType libkb.SigchainV2Type, innerType string) error {
+	return UnsupportedLinkTypeError{
+		outerType: outerType,
+		innerType: innerType,
+	}
+}
+
+func (e UnsupportedLinkTypeError) Error() string {
+	return fmt.Sprintf("unsupported team link type: %v (%v)", e.outerType, e.innerType)
+}
