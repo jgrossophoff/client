@@ -2,8 +2,20 @@
 /* global Notification */ // tell lint this exists
 import debounce from 'lodash/debounce'
 
+import PlaySound from 'play-sound'
+
 const rateLimit: {[key: string]: () => void} = {}
 const rateLimitPayloads: {[key: string]: {title: string, opts: ?Object, onClick: ?() => void}} = {}
+const soundFxFile = "~/.keybase/audio/incoming-msg.wav";
+
+function playSoundFx() {
+  try {
+    PlaySound({opts: {}}).play(soundFxFile)
+  } catch(err) {
+    console.log("unable to play incoming message sound fx file " + audioFxFile)
+    console.log(err)
+  }
+}
 
 export function NotifyPopup(
   title: string,
@@ -35,4 +47,5 @@ export function NotifyPopup(
 
   const notification: any = new Notification(title, {...opts, silent: true})
   notification.onclick = onClick
+  playSoundFx()
 }
