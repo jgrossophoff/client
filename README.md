@@ -4,6 +4,14 @@ Hi, and welcome to the Keybase client repo.  All our client apps (macOS,
 Windows, Linux, iOS, and Android) are being actively developed in this
 repository. Please, dig around.
 
+### Sound notifications
+
+This fork adds sound notifications for incoming messages. Just create a keybase folder:
+
+`mkdir -p ~/.keybase/audio`
+
+and create a file incoming-msg.wav into it.
+
 ### Warnings
 
 We'd love you to read our source code.
