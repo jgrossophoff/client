@@ -6,11 +6,29 @@ repository. Please, dig around.
 
 ### Sound notifications
 
-This fork adds sound notifications for incoming messages. Just create a keybase folder:
+This fork adds sound notifications for incoming messages. Create a keybase folder:
 
 `mkdir -p ~/.keybase/audio`
 
-and create a file incoming-msg.wav into it.
+and create a file `incoming-msg.wav` in it.
+
+### Build
+
+Make sure npm and yarn are installed:
+
+`npm install -g yarn`
+
+Enter the folder shared and install dependencies:
+
+`cd shared && yarn install`
+
+Then run the npm build target:
+
+`yarn build-prod`
+
+And to package the electron app:
+
+`yarn package`
 
 ### Warnings
 
